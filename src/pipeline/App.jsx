@@ -10,7 +10,7 @@ import {
   useTransform,
 } from 'motion/react'
 import { createIngest, createStore, createDetect, createRespond } from './scenes.js'
-import { useCanvasScene, span, lerp, smooth } from './useCanvasScene.js'
+import { useCanvasScene, span, lerp } from './useCanvasScene.js'
 import { person, links, experience, projects, skills } from '../shared/content.js'
 import { useContact } from '../shared/contact.js'
 import { ExternalLink } from '../shared/ExternalLink.jsx'
@@ -20,7 +20,8 @@ import { SystemPanel } from './SystemPanel.jsx'
 const ease = [0.16, 1, 0.3, 1]
 
 const fmtInt = (v) => Math.round(v).toLocaleString('en-US')
-const cut = (n) => (n === 0 ? '0%' : `−${n}%`)
+const cut = (n) => `−${Math.round(n)}%`
+const gain = (n) => `+${Math.round(n)}%`
 
 // The pipeline, in the order an event actually travels through it.
 const stages = [
@@ -32,8 +33,8 @@ const stages = [
     title: 'Rebuilt log ingestion in Rust.',
     body: 'JVM services and their network hand-offs became a memory-mapped circular buffer. When consumers fall behind, it spills to disk instead of dropping data.',
     stats: [
-      { live: (p) => fmtInt(lerp(0, 100000, smooth(span(p, 0, 0.45)))), unit: 'logs / sec, no GC pauses' },
-      { live: (p) => cut(Math.round(33 * span(p, 0.2, 0.6))), unit: 'compute cost' },
+      { value: 100000, format: fmtInt, unit: 'logs / sec, no GC pauses' },
+      { value: 33, format: cut, unit: 'compute cost' },
     ],
   },
   {
@@ -44,7 +45,7 @@ const stages = [
     title: 'Moved storage from OpenSearch to ClickHouse.',
     body: 'ReplicatedMergeTree tables with ZSTD codecs, LowCardinality encoding, typed JSON fields and bloom-filter skip indexes. Search stays sub-second over billions of events.',
     stats: [
-      { live: (p) => cut(Math.round(68 * smooth(span(p, 0.55, 0.85)))), unit: 'storage cost' },
+      { value: 68, format: cut, unit: 'storage cost' },
       { fixed: '10 TB', unit: 'ingested per day' },
     ],
   },
@@ -56,7 +57,7 @@ const stages = [
     title: 'UEBA models that keep the real anomaly.',
     body: 'Isolation Forest, autoencoder, GNN and Random Forest models over user and entity activity, replacing rules that rang on everything.',
     stats: [
-      { live: (p) => cut(Math.round(82 * smooth(span(p, 0.42, 0.82)))), unit: 'false positives' },
+      { value: 82, format: cut, unit: 'false positives' },
       { fixed: '+25%', unit: 'detection coverage' },
     ],
   },
@@ -67,7 +68,7 @@ const stages = [
     create: createRespond,
     title: 'An AI-enabled SOAR platform.',
     body: 'Enrichment, playbook response and case merging. Similarity scoring closes duplicate and low-priority cases, and threat hunters query it through a RAG interface.',
-    stats: [{ live: (p) => `+${Math.round(75 * smooth(span(p, 0.3, 0.75)))}%`, unit: 'cases handled per analyst' }],
+    stats: [{ value: 75, format: gain, unit: 'cases handled per analyst' }],
   },
   {
     id: 'access',
@@ -79,8 +80,6 @@ const stages = [
   },
 ]
 
-const toneOf = { hero: 'paper', you: 'paper', system: 'ink', ...Object.fromEntries(stages.map((s) => [s.id, s.tone])) }
-
 const railStops = [...stages.map((s) => ({ id: s.id, name: s.name })), { id: 'you', name: 'You' }]
 
 export default function App() {
@@ -88,20 +87,27 @@ export default function App() {
   const [active, setActive] = useState('hero')
   // The bar steps out of the way while reading down and returns on scroll up.
   const [away, setAway] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const { scrollY } = useScroll()
   useMotionValueEvent(scrollY, 'change', (y) => {
     const prev = scrollY.getPrevious() ?? 0
     setAway(y > 120 && y > prev)
+    setScrolled(y > 8)
+    // The bar takes the colour of whichever field is directly under it.
+    for (const el of document.querySelectorAll('[data-field]')) {
+      const r = el.getBoundingClientRect()
+      if (r.top <= 32 && r.bottom > 32) {
+        document.documentElement.dataset.tone = el.dataset.field
+        break
+      }
+    }
   })
   // The fixed bar and rail take their colour from the field they sit on.
-  useEffect(() => {
-    document.documentElement.dataset.tone = toneOf[active] ?? 'paper'
-  }, [active])
 
   return (
     <>
       <a className="skip" href="#you">Skip to contact and resume</a>
-      <header className={`bar ${away ? 'is-away' : ''}`}>
+      <header className={`bar ${away ? 'is-away' : ''} ${scrolled ? 'is-solid' : ''}`}>
         <a className="bar__name" href="#top">Aarav Jadav</a>
         <nav className="bar__links" aria-label="Contact">
           <a href={person.resumePdf} download>Resume<span className="wide-only"> PDF</span></a>
@@ -152,7 +158,7 @@ function Hero({ onActive }) {
   }, [typed, reduce])
 
   return (
-    <section className="hero" ref={ref} aria-labelledby="hero-name">
+    <section className="hero" ref={ref} data-field="paper" aria-labelledby="hero-name">
       <motion.h1 id="hero-name" className="hero__name" style={{ fontVariationSettings: fvs }}>
         <span>Aarav</span>
         <span>Sunil Jadav</span>
@@ -188,7 +194,7 @@ function Scene({ stage, index, onActive }) {
   useEffect(() => { if (inView) onActive(stage.id) }, [inView, onActive, stage.id])
 
   return (
-    <section id={stage.id} ref={ref} className={`scene tone-${stage.tone}`} aria-labelledby={`${stage.id}-title`}>
+    <section id={stage.id} ref={ref} data-field={stage.tone} className={`scene tone-${stage.tone}`} aria-labelledby={`${stage.id}-title`}>
       <div className="scene__frame">
         {stage.create ? <SceneCanvas create={stage.create} progress={scrollYProgress} /> : <Policy progress={scrollYProgress} />}
         <div className="scene__text">
@@ -208,7 +214,7 @@ function Scene({ stage, index, onActive }) {
           <p className="scene__body">{stage.body}</p>
           <dl className="stats">
             {stage.stats.map((st) => (
-              <Stat key={st.unit} stat={st} progress={scrollYProgress} />
+              <Stat key={st.unit} stat={st} />
             ))}
           </dl>
         </div>
@@ -222,13 +228,33 @@ function SceneCanvas({ create, progress }) {
   return <canvas ref={ref} className="scene__canvas" aria-hidden="true" />
 }
 
-function Stat({ stat, progress }) {
-  const live = useTransform(progress, (p) => (stat.live ? stat.live(p) : stat.fixed))
+// The final figure is always what the page says: it is in the DOM from the
+// first render, and screen readers only ever get that. The count-up runs once,
+// when the number first comes into view, then settles on the same text.
+function Stat({ stat }) {
+  const ref = useRef(null)
+  const reduce = useReducedMotion()
+  const inView = useInView(ref, { once: true, amount: 0.8 })
+  const final = stat.format ? stat.format(stat.value) : stat.fixed
+
+  useEffect(() => {
+    if (!inView || reduce || !stat.format) return
+    const el = ref.current
+    const a = animate(0, stat.value, {
+      duration: 1.4,
+      ease,
+      onUpdate: (v) => { el.textContent = stat.format(v) },
+      onComplete: () => { el.textContent = final },
+    })
+    return () => { a.stop(); el.textContent = final }
+  }, [inView, reduce, stat, final])
+
   return (
     <div className="stat">
       <dt className="stat__unit">{stat.unit}</dt>
       <dd className="stat__value">
-        {stat.live ? <motion.span>{live}</motion.span> : stat.fixed}
+        <span ref={ref} aria-hidden="true">{final}</span>
+        <span className="sr-only">{final}</span>
       </dd>
     </div>
   )
@@ -309,7 +335,7 @@ function You({ contact, onActive }) {
   const job = experience[0]
 
   return (
-    <section id="you" ref={ref} className="you" aria-labelledby="you-title">
+    <section id="you" ref={ref} data-field="paper" className="you" aria-labelledby="you-title">
       <div className="you__head">
         <p className="scene__step"><span>06</span> Delivered</p>
         <h2 id="you-title" className="you__title">Hiring for backend, data or full-stack? Let’s talk.</h2>

@@ -16,6 +16,12 @@
   color-scheme: light;
 }
 :root[data-tone='cobalt'], :root[data-tone='ink'], :root[data-tone='green'] { --chrome: #fff; }
+:root { --field: var(--paper); }
+:root[data-tone='hot'] { --field: var(--hot); }
+:root[data-tone='cobalt'] { --field: var(--cobalt); }
+:root[data-tone='ink'] { --field: var(--ink); }
+:root[data-tone='sun'] { --field: var(--sun); }
+:root[data-tone='green'] { --field: var(--green); }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--paper); scroll-behavior: smooth; overflow-x: clip; }
@@ -30,6 +36,7 @@ body {
 ::selection { background: var(--ink); color: var(--sun); }
 :focus-visible { outline: 3px solid var(--cobalt); outline-offset: 3px; }
 a { color: inherit; text-underline-offset: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: fixed; left: 16px; top: -60px; padding: 10px 14px; background: var(--ink); color: #fff; z-index: 30; }
 .skip:focus { top: 12px; }
 
@@ -40,8 +47,11 @@ a { color: inherit; text-underline-offset: 4px; }
   padding: 18px var(--pad);
   color: var(--chrome);
   pointer-events: none;
-  transition: color 0.4s, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color 0.4s, background 0.4s, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
+/* Once the page moves, the bar gets the colour of the field under it, so
+   nothing scrolls visibly beneath it. */
+.bar.is-solid { background: var(--field); }
 .bar.is-away { transform: translateY(-100%); }
 .bar a { pointer-events: auto; text-decoration: none; }
 .bar__name { font: 700 15px/1 var(--sans); font-stretch: 110%; letter-spacing: 0.01em; }
@@ -233,6 +243,8 @@ a.crow:hover .crow__arrow { transform: translateX(-10px); }
   .policy__doc { line-height: 1.6; }
   .policy__verdict { font-size: 2.4rem; padding: 4px 14px; border-width: 3px; margin: 0; }
   .hero__name { font-size: 11.2vw; }
+  .hero { min-height: 0; grid-template-rows: auto auto; gap: 48px; padding-top: 112px; }
+  .hero__name { align-self: start; }
   .crow { grid-template-columns: 1fr auto; gap: 6px 12px; }
   .crow__label, .crow__value { grid-column: 1; }
   .crow__arrow { grid-column: 2; grid-row: 1 / span 2; }

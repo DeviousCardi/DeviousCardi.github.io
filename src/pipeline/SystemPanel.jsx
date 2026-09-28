@@ -41,7 +41,7 @@ export function SystemPanel({ onActive }) {
   const kb = (b) => `${(b / 1024).toFixed(1)} KB`
 
   return (
-    <section className="system" id="system" ref={ref} aria-labelledby="system-title">
+    <section className="system" id="system" ref={ref} data-field="ink" aria-labelledby="system-title">
       <h2 id="system-title" className="system__title">This site is a hardened system too.</h2>
       <p className="system__lede">
         Measured in your browser just now, and at build time. Nothing here is typed by hand.

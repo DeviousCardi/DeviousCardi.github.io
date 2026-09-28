@@ -30,6 +30,15 @@ function label(ctx, text, x, y, color, size = 11, align = 'left') {
   ctx.fillText(text, x, y)
 }
 
+// A label that must stay inside its column: shrink it, and drop it rather
+// than let it run into the next column.
+function fitLabel(ctx, text, x, y, max, color, size) {
+  for (let px = size; px >= 7; px--) {
+    ctx.font = `500 ${px}px ${MONO}`
+    if (ctx.measureText(text).width <= max) return label(ctx, text, x, y, color, px)
+  }
+}
+
 /* ------------------------------------------------------------------ INGEST */
 // A memory-mapped ring buffer taking a stream of log lines. Mid-scroll the
 // consumer slows (backpressure), the ring fills, and the overflow spills to
@@ -145,17 +154,17 @@ export function createStore() {
     draw(ctx, p, t) {
       const pivot = smooth(span(p, 0.15, 0.48))
       const squeeze = smooth(span(p, 0.55, 0.85))
-      const top = s.y + 34
-      const rowH = (s.h - 70) / ROWS
+      const top = s.y + 56
+      const rowH = (s.h - 92) / ROWS
       const cellH = rowH * 0.62
       const colW = s.w / COLS.length
 
       COLS.forEach((c, f) => {
         const x = s.x + f * colW
         ctx.globalAlpha = pivot
-        label(ctx, c.name, x + 2, top - 18, PAPER, s.wide ? 12 : 9)
+        fitLabel(ctx, c.name, x + 2, top - 38, colW - 10, PAPER, s.wide ? 12 : 10)
         ctx.globalAlpha = squeeze
-        label(ctx, s.wide ? c.codec : c.short, x + 2, top - 18 + (s.wide ? 16 : 13), 'rgba(238,240,242,0.7)', s.wide ? 10 : 8)
+        fitLabel(ctx, c.short, x + 2, top - 20, colW - 10, 'rgba(238,240,242,0.75)', s.wide ? 11 : 9)
         ctx.globalAlpha = 1
       })
 
@@ -186,7 +195,7 @@ export function createStore() {
         ctx.setLineDash([4, 6])
         ctx.strokeStyle = `rgba(238,240,242,${0.5 * squeeze})`
         ctx.lineWidth = 1
-        ctx.strokeRect(s.x - 4, top - 4, s.w + 4, ROWS * rowH)
+        ctx.strokeRect(s.x - 4, top - 6, s.w + 4, ROWS * rowH + 2)
         ctx.setLineDash([])
       }
       // The event row pulses so the eye can follow it.
@@ -269,81 +278,97 @@ export function createDetect() {
 }
 
 /* ----------------------------------------------------------------- RESPOND */
-// Alerts pour in as cards. Similarity scoring stacks duplicates into one case
-// and closes the low-priority ones, so an analyst sees a short queue.
+// Alerts pour in as cards. First the low-priority ones are closed where they
+// lie; then the rest move to the analyst's queue, where duplicates stack
+// into one case each. The queue ends much shorter than the pile it came from.
 export function createRespond() {
   let s
   const rand = rng(5)
-  const GROUPS = 9
-  const alerts = Array.from({ length: 36 }, (_, i) => ({
+  const GROUPS = 6
+  const alerts = Array.from({ length: 32 }, (_, i) => ({
     g: i === 0 ? 0 : Math.floor(rand() * GROUPS),
-    low: i !== 0 && rand() < 0.3,
+    low: i !== 0 && rand() < 0.32,
     px: rand(),
     py: rand(),
     rot: (rand() - 0.5) * 0.5,
-    d: rand() * 0.25,
+    d: rand() * 0.18,
+    event: i === 0,
   }))
-  const seen = {}
-  alerts.forEach((a) => { a.dup = seen[a.g] ?? 0; seen[a.g] = a.dup + 1 })
+  // Stack depth counts only the alerts that actually reach the queue.
+  const depth = {}
+  for (const a of alerts) {
+    if (a.low) continue
+    a.dup = depth[a.g] ?? 0
+    depth[a.g] = a.dup + 1
+  }
+  const cases = Object.keys(depth).length
   return {
     resize(w, h) { s = stage(w, h) },
     draw(ctx, p) {
-      const cw = s.wide ? Math.min(140, s.w * 0.24) : s.w * 0.3
-      const ch = Math.min(cw * 0.5, (s.h - 40) / GROUPS - 4)
-      const laneX = s.x + s.w - cw - 4
-      const pileW = s.w - cw - 40
-      const move = (a) => smooth(span(p, 0.12 + a.d, 0.5 + a.d))
-      const closed = smooth(span(p, 0.55, 0.8))
+      const cw = s.wide ? Math.min(150, s.w * 0.26) : s.w * 0.34
+      const slotH = (s.h - 70) / GROUPS
+      const ch = Math.min(cw * 0.5, slotH - 16)
+      const laneX = s.x + s.w - cw - 8
+      const pileW = s.w - cw - 70
+      const closing = (a) => smooth(span(p, 0.1 + a.d * 0.5, 0.32 + a.d * 0.5))
+      const move = (a) => smooth(span(p, 0.36 + a.d, 0.66 + a.d))
+      const slotY = (g) => s.y + 30 + g * slotH
 
-      label(ctx, 'incoming alerts', s.x, s.y - 4, INK, 11)
-      label(ctx, 'analyst queue', laneX, s.y - 4, INK, 11)
+      label(ctx, 'incoming alerts', s.x, s.y + 4, INK, 11)
+      label(ctx, 'analyst queue', laneX, s.y + 4, INK, 11)
 
-      const order = [...alerts].sort((a, b) => move(a) - move(b))
+      const order = [...alerts].sort((a, b) => (a.low ? -1 : move(a)) - (b.low ? -1 : move(b)))
       for (const a of order) {
-        const k = move(a)
-        const fromX = s.x + a.px * (pileW - cw)
-        const fromY = s.y + 28 + a.py * (s.h - ch - 32)
-        const slot = a.g
-        const toX = laneX + a.dup * 3
-        const toY = s.y + 28 + slot * ((s.h - ch - 32) / GROUPS) - a.dup * 3
-        const x = lerp(fromX, toX, k)
-        const y = lerp(fromY, toY, k)
-        const fade = a.low ? closed : 0
-        if (fade > 0.98) continue
+        const fromX = s.x + a.px * Math.max(0, pileW - cw)
+        const fromY = s.y + 30 + a.py * (s.h - ch - 40)
+        let x = fromX
+        let y = fromY
+        let k = 0
+        let alpha = 1
+        let strike = 0
+        if (a.low) {
+          const c = closing(a)
+          strike = Math.min(1, c * 2)
+          alpha = 1 - span(c, 0.5, 1)
+          if (alpha <= 0.01) continue
+        } else {
+          k = move(a)
+          x = lerp(fromX, laneX + a.dup * 4, k)
+          y = lerp(fromY, slotY(a.g) - a.dup * 4 + (slotH - ch) / 2, k)
+        }
         ctx.save()
-        ctx.globalAlpha = 1 - fade
+        ctx.globalAlpha = alpha
         ctx.translate(x + cw / 2, y + ch / 2)
         ctx.rotate(a.rot * (1 - k))
-        const isEvent = alerts.indexOf(a) === 0
-        ctx.fillStyle = isEvent ? HOT : PAPER
+        ctx.fillStyle = a.event ? HOT : PAPER
         ctx.strokeStyle = INK
         ctx.lineWidth = 1.5
         roundRect(ctx, -cw / 2, -ch / 2, cw, ch, 6)
         ctx.fill()
         ctx.stroke()
         ctx.fillStyle = INK
-        ctx.fillRect(-cw / 2 + 10, -ch / 2 + 10, cw * 0.5, 3)
-        ctx.fillRect(-cw / 2 + 10, -ch / 2 + 18, cw * 0.32, 3)
-        if (a.low && fade > 0) {
-          ctx.strokeStyle = INK
+        ctx.fillRect(-cw / 2 + 10, -ch / 2 + 9, cw * 0.5, 3)
+        ctx.fillRect(-cw / 2 + 10, -ch / 2 + 17, cw * 0.32, 3)
+        if (strike > 0) {
+          ctx.lineWidth = 2
           ctx.beginPath()
           ctx.moveTo(-cw / 2 + 6, 0)
-          ctx.lineTo(-cw / 2 + 6 + (cw - 12) * Math.min(1, fade * 2), 0)
+          ctx.lineTo(-cw / 2 + 6 + (cw - 12) * strike, 0)
           ctx.stroke()
         }
         ctx.restore()
       }
-      // Merged-case counts on the lane.
-      const settled = span(p, 0.5, 0.62)
+
+      // Case counts, once the stacks have landed.
+      const settled = span(p, 0.72, 0.84)
       if (settled > 0) {
+        ctx.globalAlpha = settled
         for (let g = 0; g < GROUPS; g++) {
-          const n = alerts.filter((a) => a.g === g && !(a.low && closed > 0.5)).length
-          if (!n) continue
-          const y = s.y + 28 + g * ((s.h - ch - 32) / GROUPS) + ch / 2
-          ctx.globalAlpha = settled
-          label(ctx, `×${n}`, laneX - 10, y, INK, 12, 'right')
-          ctx.globalAlpha = 1
+          const n = depth[g] ?? 0
+          if (n > 1) label(ctx, `${n} merged`, laneX - 14, slotY(g) + slotH / 2, INK, 11, 'right')
         }
+        label(ctx, `${alerts.length} alerts → ${cases} cases`, laneX + cw, s.y + s.h - 6, INK, 12, 'right')
+        ctx.globalAlpha = 1
       }
     },
   }
