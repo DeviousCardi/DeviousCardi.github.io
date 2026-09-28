@@ -1,0 +1,10 @@
+# Private working notes: never published
+PRODUCT.md
+DESIGN.md
+.impeccable/
+*.local.*
+.env*
+
+# Build and dependencies
+node_modules/
+dist/
