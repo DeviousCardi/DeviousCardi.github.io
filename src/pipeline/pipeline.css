@@ -196,6 +196,7 @@ a.crow:hover .crow__arrow { transform: translateX(-10px); }
 .cv__block--wide { border-top: 3px solid var(--ink); padding-top: 20px; }
 .cv__side .cv__block { border-top: 3px solid var(--ink); padding-top: 20px; }
 .cv__text { margin: 10px 0 0; color: var(--ink-2); }
+.cv__text b { color: var(--ink); }
 .cv__skills { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; border-top: 3px solid var(--ink); padding-top: 20px; }
 .cv__skills h3 { font-size: 1.1rem; }
 .cv__skills p { margin: 10px 0 0; color: var(--ink-2); font-size: 15px; }

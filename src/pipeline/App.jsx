@@ -367,8 +367,10 @@ function You({ contact, onActive }) {
           {experience.slice(1).map((j) => (
             <article className="cv__block" key={j.id}>
               <h3>{j.company}</h3>
-              <p className="cv__meta">{j.title} · {j.when}</p>
-              {j.items.map((it) => <p key={it.headline} className="cv__text">{it.text}</p>)}
+              <p className="cv__meta">{j.title} · {j.when} · {j.place}</p>
+              {j.items.map((it) => (
+                <p key={it.headline} className="cv__text"><b>{it.headline}.</b> {it.text}</p>
+              ))}
             </article>
           ))}
           {projects.map((p) => (

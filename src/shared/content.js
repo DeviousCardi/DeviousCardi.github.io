@@ -56,6 +56,18 @@ export const experience = [
     ],
   },
   {
+    id: 'freelance',
+    company: 'Freelance',
+    title: 'Web development and AI evaluation',
+    when: 'Jan 2025 – present',
+    start: '2025-01',
+    place: 'Remote',
+    items: [
+      { tag: 'WEB', system: 'client-sites', headline: 'Websites for hospitality and local businesses', text: 'Designed and built sites for hotels, villas and other vendors, from first brief to launch.' },
+      { tag: 'AI', system: 'ai-evaluation', headline: 'AI training and evaluation', text: 'Contract work through Turing, AfterQuery, Mercor and micro1: prompt engineering, software-engineering benchmark tasks, and AI output quality review.' },
+    ],
+  },
+  {
     id: 'fluentgrid',
     company: 'FluentGrid Limited',
     title: 'Intern',
