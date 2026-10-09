@@ -1,5 +1,5 @@
 // Single source of truth for every variant. Every fact here comes from the
-// resume (main_2.tex). Do not add numbers that are not on the resume.
+// resume (../Jobs/main_4.tex). Do not add numbers that are not on the resume.
 
 export const person = {
   name: 'Aarav Sunil Jadav',
@@ -33,7 +33,7 @@ export const metrics = [
   { id: 'storage', value: -68, display: '−68%', unit: 'storage cost', label: 'Storage cost', note: 'OpenSearch to ClickHouse: ReplicatedMergeTree, ZSTD, LowCardinality, bloom-filter skip indexes', kind: 'cut' },
   { id: 'compute', value: -33, display: '−33%', unit: 'compute cost', label: 'Ingest compute', note: 'Memory-mapped circular buffer with disk spill under backpressure', kind: 'cut' },
   { id: 'cases', value: 75, display: '+75%', unit: 'cases / analyst', label: 'Analyst throughput', note: 'Similarity scoring in the SOAR platform auto-closes duplicate and low-priority cases', kind: 'gain' },
-  { id: 'fp', value: -82, display: '−82%', unit: 'false positives', label: 'False positives', note: 'UEBA detection with Isolation Forest, autoencoder, GNN and Random Forest models', kind: 'cut' },
+  { id: 'fp', value: -82, display: '−82%', unit: 'false positives', label: 'False positives', note: 'Python UEBA detection with Isolation Forest, autoencoder, GNN and Random Forest models', kind: 'cut' },
 ]
 
 export const experience = [
@@ -50,21 +50,30 @@ export const experience = [
       { tag: 'STORE', system: 'clickhouse', headline: 'Moved storage from OpenSearch to ClickHouse', text: 'ReplicatedMergeTree tables with ZSTD codecs, LowCardinality encoding, typed JSON fields and bloom-filter skip indexes. Storage cost down 68%, CPU down 10%, at 10 TB/day ingest with sub-second search over billions of events.', metric: 'storage' },
       { tag: 'AUTH', system: 'iam', headline: 'Built the IAM service end to end', text: 'AWS IAM-style allow/deny policies evaluated per request, REST and gRPC APIs, and enterprise federation through SAML, OIDC and LDAP.' },
       { tag: 'SOAR', system: 'soar', headline: 'AI-enabled SOAR platform', text: 'Alert enrichment, playbook response and case merging. Similarity scoring auto-closes duplicate and low-priority cases, raising cases handled per analyst by 75%. Added a RAG-based query interface for threat hunters.', metric: 'cases' },
-      { tag: 'UEBA', system: 'ueba', headline: 'UEBA detection models', text: 'Isolation Forest, autoencoder, GNN and Random Forest models over user and entity activity. Detection coverage up 25%, false positives down 82%.', metric: 'fp' },
+      { tag: 'UEBA', system: 'ueba', headline: 'UEBA detection models in Python', text: 'Isolation Forest, autoencoder, GNN and Random Forest models over user and entity activity. Detection coverage up 25%, false positives down 82%.', metric: 'fp' },
       { tag: 'CI/CD', system: 'actions', headline: 'Jenkins to GitHub Actions', text: 'Pipelines deploying SOAR and UEBA on GCP and IAM and other services on Azure, provisioning with Terraform and configuring with Ansible.' },
-      { tag: 'OBS', system: 'observability', headline: 'Observability service', text: 'Prometheus-style health, ingest throughput, queue depth, backpressure and per-tenant usage, with a React dashboard and threshold alerts used by the on-call team.' },
+      { tag: 'OBS', system: 'observability', headline: 'Observability service', text: 'Prometheus-style health, ingest throughput, queue depth, backpressure and per-tenant usage, with a TypeScript/React dashboard and threshold alerts used by the on-call team.' },
     ],
   },
   {
-    id: 'freelance',
-    company: 'Freelance',
-    title: 'Web development and AI evaluation',
-    when: 'Jan 2025 – present',
-    start: '2025-01',
+    id: 'open-source',
+    company: 'Open Source Contributor',
+    title: '',
+    when: 'Jun 2025 – present',
+    start: '2025-06',
     place: 'Remote',
     items: [
-      { tag: 'WEB', system: 'client-sites', headline: 'Websites for hospitality and local businesses', text: 'Designed and built sites for hotels, villas and other vendors, from first brief to launch.' },
-      { tag: 'AI', system: 'ai-evaluation', headline: 'AI training and evaluation', text: 'Contract work through Turing, AfterQuery, Mercor and micro1: prompt engineering, software-engineering benchmark tasks, and AI output quality review.' },
+      { tag: 'OWN', system: 'open-source', headline: 'Created and maintain SpecMatrix', text: 'Built a Rust compatibility tester for observability backends as my own open-source project.', links: [
+        { label: 'Repository', url: 'https://github.com/DeviousCardi/specmatrix' },
+      ] },
+      { tag: 'OSS', system: 'open-source', headline: 'Contributions across open source data systems', text: 'Worked on partition safety in ClickHouse, PromQL and auth in GreptimeDB, hash joins in DuckDB, decimal statistics in Apache Arrow Rust, and expression evaluation in Apache DataFusion. I continue contributing to other open source projects.', links: [
+        { label: 'ClickHouse', url: 'https://github.com/ClickHouse/ClickHouse/pull/122419' },
+        { label: 'GreptimeDB PromQL', url: 'https://github.com/GreptimeTeam/greptimedb/pull/9364' },
+        { label: 'GreptimeDB auth', url: 'https://github.com/GreptimeTeam/greptimedb/pull/9365' },
+        { label: 'DuckDB', url: 'https://github.com/duckdb/duckdb/pull/25718' },
+        { label: 'Arrow Rust', url: 'https://github.com/apache/arrow-rs/pull/11092' },
+        { label: 'DataFusion', url: 'https://github.com/apache/datafusion/pull/25561' },
+      ] },
     ],
   },
   {
@@ -93,12 +102,21 @@ export const experience = [
 
 export const projects = [
   {
+    id: 'specmatrix',
+    name: 'SpecMatrix',
+    lang: 'Rust',
+    when: 'Sep 2026 – present',
+    status: 'Open source · built and maintained',
+    text: 'My compatibility tester for observability backends. It sends edge-case log, metric and trace payloads, reads them back, and reports silent data changes alongside rejections and exact matches.',
+    url: 'https://github.com/DeviousCardi/specmatrix',
+  },
+  {
     id: 'siem',
     name: 'Distributed SIEM log store and query engine',
     lang: 'Rust',
     when: 'Jul 2026 – present',
     status: 'In progress',
-    text: 'Tenant-aware sharding, replicated ingestion, compressed columnar storage, indexed search, automatic promotion of frequently queried JSON fields to typed columns, end-to-end policy-based access control, and a React investigation dashboard.',
+    text: 'Tenant-aware sharding, replicated ingestion, compressed columnar storage, indexed search, automatic promotion of frequently queried JSON fields to typed columns, end-to-end policy-based access control, and a TypeScript/React investigation dashboard.',
   },
   {
     id: 'repair',
@@ -111,7 +129,7 @@ export const projects = [
 ]
 
 export const skills = [
-  { group: 'Languages', items: ['Rust', 'Python', 'Java', 'JavaScript', 'C++', 'C'] },
+  { group: 'Languages', items: ['Rust', 'Python', 'Java', 'TypeScript', 'JavaScript', 'C++', 'C'] },
   { group: 'Data', items: ['ClickHouse', 'PostgreSQL', 'OpenSearch', 'SQL', 'Qdrant', 'MongoDB'] },
   { group: 'Full-stack', items: ['React', 'Node.js', 'REST', 'gRPC', 'FastAPI', '.NET'] },
   { group: 'Infrastructure', items: ['Kubernetes', 'GCP', 'Azure', 'GitHub Actions', 'Terraform', 'Ansible', 'Prometheus', 'Docker', 'Linux'] },

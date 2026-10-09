@@ -55,7 +55,7 @@ const stages = [
     tone: 'ink',
     create: createDetect,
     title: 'UEBA models that keep the real anomaly.',
-    body: 'Isolation Forest, autoencoder, GNN and Random Forest models over user and entity activity, replacing rules that rang on everything.',
+    body: 'Python models using Isolation Forest, autoencoder, GNN and Random Forest over user and entity activity, replacing rules that rang on everything.',
     stats: [
       { value: 82, format: cut, unit: 'false positives' },
       { fixed: '+25%', unit: 'detection coverage' },
@@ -367,15 +367,15 @@ function You({ contact, onActive }) {
           {experience.slice(1).map((j) => (
             <article className="cv__block" key={j.id}>
               <h3>{j.company}</h3>
-              <p className="cv__meta">{j.title} · {j.when} · {j.place}</p>
+              <p className="cv__meta">{[j.title, j.when, j.place].filter(Boolean).join(' · ')}</p>
               {j.items.map((it) => (
-                <p key={it.headline} className="cv__text"><b>{it.headline}.</b> {it.text}</p>
+                <p key={it.headline} className="cv__text"><b>{it.headline}.</b> {it.text}{it.links && <> {' · '}{it.links.map((link, index) => <span key={link.url}>{index > 0 && ' · '}<ExternalLink href={link.url}>{link.label}</ExternalLink></span>)}</>}</p>
               ))}
             </article>
           ))}
           {projects.map((p) => (
             <article className="cv__block" key={p.id}>
-              <h3>{p.name}</h3>
+              <h3>{p.url ? <ExternalLink href={p.url}>{p.name}</ExternalLink> : p.name}</h3>
               <p className="cv__meta">{p.lang} · {p.when} · {p.status}</p>
               <p className="cv__text">{p.text}</p>
             </article>
