@@ -102,6 +102,15 @@ export const experience = [
 
 export const projects = [
   {
+    id: 'githearth',
+    name: 'GitHearth',
+    lang: 'Rust · PostgreSQL',
+    when: 'Sep 2026 – present',
+    status: 'Source-available · in progress',
+    text: 'A self-hostable, GitHub-style Git forge: Git hosting over Smart HTTP and SSH, pull requests with inline reviews, code owners, branch protection, signed-commit policy, merge queue and auto-merge, with Cedar policy-based authorization. Ships install, backup/restore, upgrade and uninstall runbooks with executable drills.',
+    url: 'https://github.com/DeviousCardi/githearth',
+  },
+  {
     id: 'specmatrix',
     name: 'SpecMatrix',
     lang: 'Rust',
@@ -117,14 +126,6 @@ export const projects = [
     when: 'Jul 2026 – present',
     status: 'In progress',
     text: 'Tenant-aware sharding, replicated ingestion, compressed columnar storage, indexed search, automatic promotion of frequently queried JSON fields to typed columns, end-to-end policy-based access control, and a TypeScript/React investigation dashboard.',
-  },
-  {
-    id: 'repair',
-    name: 'Automated correction of programming errors',
-    lang: 'Deep learning',
-    when: 'Feb 2024 – May 2024',
-    status: 'Completed',
-    text: 'GRU and LSTM models for automated program repair, reaching 95% accuracy on a purpose-built dataset of 50,000+ C code samples with syntax errors.',
   },
 ]
 
