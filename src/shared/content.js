@@ -78,7 +78,7 @@ export const experience = [
         { label: 'ParadeDB', url: 'https://github.com/paradedb/paradedb/pull/6352' },
         { label: 'pgstream', url: 'https://github.com/xataio/pgstream/pull/1257' },
       ] },
-      { tag: 'OSS', system: 'open-source', headline: 'Infrastructure, security and tooling', text: 'Tokio, minikube (SSH host keys), SeaweedFS (IAM), authentik (consent), Vector VRL, Nushell, bat, fmt, Ruff and pandas.', links: [
+      { tag: 'OSS', system: 'open-source', headline: 'Security and infrastructure', text: 'minikube (SSH host keys), SeaweedFS (IAM), authentik (consent), Tokio, Vector VRL, Nushell, bat, fmt, Ruff and pandas.', links: [
         { label: 'Tokio', url: 'https://github.com/tokio-rs/tokio/pull/8719' },
         { label: 'minikube', url: 'https://github.com/kubernetes/minikube/pull/24058' },
         { label: 'SeaweedFS', url: 'https://github.com/seaweedfs/seaweedfs/pull/11765' },
@@ -123,7 +123,7 @@ export const projects = [
     lang: 'Rust · PostgreSQL',
     when: 'Sep 2026 – present',
     status: 'Source-available · in progress',
-    text: 'A self-hostable, GitHub-style Git forge: Git hosting over Smart HTTP and SSH, pull requests with inline reviews, code owners, branch protection, signed-commit policy, merge queue and auto-merge, with Cedar policy-based authorization. Ships install, backup/restore, upgrade and uninstall runbooks with executable drills.',
+    text: 'A self-hostable, GitHub-style Git forge: Git hosting over Smart HTTP and SSH, pull requests with inline reviews, code owners, branch protection, signed-commit policy, merge queue and auto-merge, with Cedar policy-based authorization. Security: Argon2id password hashing, CSRF protection, sign-in throttling, an audit log and cargo-deny supply-chain checks in CI, plus backup/restore and upgrade drills.',
     url: 'https://github.com/DeviousCardi/githearth',
   },
   {
@@ -150,6 +150,6 @@ export const skills = [
   { group: 'Data', items: ['ClickHouse', 'PostgreSQL', 'OpenSearch', 'SQL', 'Qdrant', 'MongoDB'] },
   { group: 'Full-stack', items: ['React', 'Node.js', 'REST', 'gRPC', 'FastAPI', '.NET'] },
   { group: 'Infrastructure', items: ['Kubernetes', 'GCP', 'Azure', 'GitHub Actions', 'Terraform', 'Ansible', 'Prometheus', 'Docker', 'Linux'] },
-  { group: 'Testing & security', items: ['Fuzz testing (cargo-fuzz, libFuzzer)', 'Property-based testing', 'SAML/OIDC', 'Policy-based access control'] },
+  { group: 'Security', items: ['SIEM', 'UEBA', 'SOAR', 'IAM (SAML, OIDC, LDAP)', 'Fuzzing (cargo-fuzz, libFuzzer)', 'Argon2id', 'CSRF', 'cargo-deny'] },
   { group: 'AI & ML', items: ['Anomaly detection', 'RAG pipelines', 'PyTorch', 'TensorFlow'] },
 ]
