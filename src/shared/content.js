@@ -47,9 +47,9 @@ export const experience = [
     items: [
       { tag: 'LEAD', system: 'platform', headline: 'Tech lead for 7+ engineers', text: 'Kubernetes-based, multi-tenant SOC platform serving 30+ enterprise customers. I own architecture, releases and 24/7 on-call support.' },
       { tag: 'INGEST', system: 'rust-ingest', headline: 'Rebuilt log ingestion in Rust', text: 'Replaced JVM services and their network hand-offs with a memory-mapped circular buffer that spills to disk under backpressure. Sustains 100,000 logs/sec without GC pauses or data loss, at 33% lower compute cost. Fuzz-tested the log parsers against malformed and adversarial input.', metric: 'ingest' },
-      { tag: 'STORE', system: 'clickhouse', headline: 'Moved storage from OpenSearch to ClickHouse', text: 'ReplicatedMergeTree tables with ZSTD codecs, LowCardinality encoding, typed JSON fields and bloom-filter skip indexes. Storage cost down 68%, CPU down 10%, at 10 TB/day ingest with sub-second search over billions of events.', metric: 'storage' },
+      { tag: 'STORE', system: 'clickhouse', headline: 'Moved storage from OpenSearch to ClickHouse', text: 'After running Kafka, Airflow and Databricks in production trials, moved to a purpose-built pipeline on distributed ClickHouse. ReplicatedMergeTree tables with ZSTD codecs, LowCardinality encoding, typed JSON fields and bloom-filter skip indexes. Storage cost down 68%, CPU down 10%, at 10 TB/day ingest with sub-second search over billions of events.', metric: 'storage' },
       { tag: 'AUTH', system: 'iam', headline: 'Built the IAM service end to end', text: 'AWS IAM-style allow/deny policies evaluated per request, REST and gRPC APIs, and enterprise federation through SAML, OIDC and LDAP.' },
-      { tag: 'SOAR', system: 'soar', headline: 'AI-enabled SOAR platform', text: 'Alert enrichment, playbook response and case merging. Similarity scoring auto-closes duplicate and low-priority cases, raising cases handled per analyst by 75%. Added a RAG-based query interface for threat hunters.', metric: 'cases' },
+      { tag: 'SOAR', system: 'soar', headline: 'AI-enabled SOAR platform', text: 'Alert enrichment, playbook response and case merging over RabbitMQ queues. Similarity scoring auto-closes duplicate and low-priority cases, raising cases handled per analyst by 75%. Added a RAG-based query interface for threat hunters.', metric: 'cases' },
       { tag: 'UEBA', system: 'ueba', headline: 'UEBA detection models in Python', text: 'Isolation Forest, autoencoder, GNN and Random Forest models over user and entity activity. Detection coverage up 25%, false positives down 82%.', metric: 'fp' },
       { tag: 'CI/CD', system: 'actions', headline: 'Jenkins to GitHub Actions', text: 'Pipelines deploying SOAR and UEBA on GCP and IAM and other services on Azure, provisioning with Terraform and configuring with Ansible.' },
       { tag: 'OBS', system: 'observability', headline: 'Observability service', text: 'Prometheus-style health, ingest throughput, queue depth, backpressure and per-tenant usage, with a TypeScript/React dashboard and threshold alerts used by the on-call team.' },
@@ -147,7 +147,7 @@ export const projects = [
 
 export const skills = [
   { group: 'Languages', items: ['Rust', 'Python', 'Java', 'TypeScript', 'JavaScript', 'C++', 'C'] },
-  { group: 'Data', items: ['ClickHouse', 'PostgreSQL', 'OpenSearch', 'SQL', 'Qdrant', 'MongoDB'] },
+  { group: 'Data', items: ['ClickHouse', 'PostgreSQL', 'OpenSearch', 'SQL', 'Qdrant', 'MongoDB', 'Kafka', 'RabbitMQ', 'Airflow', 'Databricks'] },
   { group: 'Full-stack', items: ['React', 'Node.js', 'REST', 'gRPC', 'FastAPI', '.NET'] },
   { group: 'Infrastructure', items: ['Kubernetes', 'GCP', 'Azure', 'GitHub Actions', 'Terraform', 'Ansible', 'Prometheus', 'Docker', 'Linux'] },
   { group: 'Security', items: ['SIEM', 'UEBA', 'SOAR', 'IAM (SAML, OIDC, LDAP)', 'Fuzzing (cargo-fuzz, libFuzzer)', 'Argon2id', 'CSRF', 'cargo-deny'] },
